@@ -1,2 +1,69 @@
 @import './base.css';
 
+body {
+    background-color: white;
+    color: black;
+}
+ol {
+    grid-area: rooms;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    height: max-content;
+}
+
+ol .rooms:hover {
+    cursor: pointer;
+    background-color: greenyellow;
+}
+.rooms {
+    background-color: rgb(195, 195, 195);
+}
+
+.room-about {
+    grid-area: about;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 3fr;
+    grid-template-areas: "title title title title"
+                                            "smile heart up down";
+}
+
+.room-about img {
+    width: 100%;
+}
+
+.room-about h4 {
+    text-align: center;
+}
+.smile {
+    grid-area: smile;
+}
+
+.heart {
+    grid-area: heart;
+}
+
+.up {
+    grid-area: up;
+}
+
+.down {
+    grid-area: down;
+}
+
+.room-title {
+    text-align: center;
+    grid-area: title;
+}
+
+.page {
+    display: grid;
+    padding: 0;
+    margin: 0;
+    grid-template-columns: 1fr 3fr;
+    grid-template-rows: 1fr 3fr;
+    grid-template-areas: "rooms about"
+                                            "rooms about";
+    
+}

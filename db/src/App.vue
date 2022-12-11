@@ -4,15 +4,57 @@ import { useCssModule } from 'vue';
 </script>
 
 <template>
-<div id="example">
-  <button v-on:click="httpGet('http://127.0.0.1:5000/room/1', null)">Room</button>
-  <h1>{{response}}</h1>
+<input v-modal="uname" placeholder="Enter Name">
+<div class="page">
+<ol>
+  <li v-for="r in rooms" @click="httpGet('http://127.0.0.1:5000/rooms/' + r[0], null)"  class="rooms">
+      Room {{ r[0] }}
+  </li>
+  <li class="rooms" @click="">
+    Add room
+  </li>
+</ol>
+<div class="room-about">
+  <div class="room-title">
+    <h1>Room: {{ room[0] }}</h1>
+    <h3>Please leave a reaction:</h3>
+  </div>
+  <div class="smile" @click="react(room[0], 1, uname)">
+    <img src="./assets/images/smile.png" alt="smile">
+    <h4>{{ room [1] }}</h4>
+  </div>
+  <div class="heart" @click="react(room[0], 2, uname)">
+    <img src="./assets/images/heart.png" alt="heart">
+    <h4>{{ room [2] }}</h4>
+  </div>
+  <div class="up" @click="react(room[0], 3, uname)">
+    <img src="./assets/images/up-arrow.png" alt="up">
+    <h4>{{ room [3] }}</h4>
+  </div>
+  <div class="down" @click="react(room[0], 4, uname)">
+    <img src="./assets/images/down-arrow.png" alt="down">
+    <h4>{{ room [4] }}</h4>
+  </div>
+  <div>
+    <h3>Previous</h3>
+    <h4>{{room[5]}}</h4>
+    <h4>{{room[6]}}</h4>
+    <h4>{{room[7]}}</h4>
+    <h4>{{room[8]}}</h4>
+    <h4>{{room[9]}}</h4>
+  </div>
 </div>
-  
+</div>
 </template>
 
 <script>
 import { ref } from 'vue'
+export default {
+  created() {
+    httpGet('http://127.0.0.1:5000/rooms/0', null)
+  }
+};
+
 function httpGet(theUrl, data) {
   var xmlHttp = new XMLHttpRequest();
   xmlHttp.open("GET", theUrl, true);
@@ -28,14 +70,32 @@ function httpGet(theUrl, data) {
   }
 
     console.log(xmlHttp.response);
-  const resp = xmlHttp.response;
+  const resp = JSON.parse(xmlHttp.response);
 
-    response.value = resp
+    room.value = resp.room
+    rooms.value = resp.rooms
   return resp
   }
 }
 
-const response = ref("")
+function react(room, reaction, uname) {
+  console.log(room, reaction, uname)
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.open("GET", 'http://127.0.0.1:5000/react/' + room + '/' + uname + '/' + reaction, true);
+  xmlHttp.setRequestHeader("Access-Control-Allow-Headers", "*");
+  xmlHttp.setRequestHeader("Access-Control-Allow-Origin", "*");
+  xmlHttp.send(null);
+  if (xmlHttp.readyState === xmlHttp.DONE) {
+    if (xmlHttp.status === 200) {
+      console.log(xmlHttp);
+      console.log(xmlHttp.responseText);
+      room.value = xmlHttp.responseText
+      httpGet('http://127.0.0.1:5000/rooms/' + room, null)
+    }
+  }
+}
+
+const uname = ref("default")
+const rooms = ref("")
+const room = ref("")
 </script>
-<style scoped>
-</style>
