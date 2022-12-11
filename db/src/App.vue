@@ -19,19 +19,19 @@ import { useCssModule } from 'vue';
     <h1>Room: {{ room[0] }}</h1>
     <h3>Please leave a reaction:</h3>
   </div>
-  <div class="smile" @click="react(room[0], 1, uname)">
+  <div class="smile" @click="react(room[0], 1, uname), room[1] += 1">
     <img src="./assets/images/smile.png" alt="smile">
     <h4>{{ room [1] }}</h4>
   </div>
-  <div class="heart" @click="react(room[0], 2, uname)">
+  <div class="heart" @click="react(room[0], 2, uname), room[2] += 1">
     <img src="./assets/images/heart.png" alt="heart">
     <h4>{{ room [2] }}</h4>
   </div>
-  <div class="up" @click="react(room[0], 3, uname)">
+  <div class="up" @click="react(room[0], 3, uname), room[3] += 1">
     <img src="./assets/images/up-arrow.png" alt="up">
     <h4>{{ room [3] }}</h4>
   </div>
-  <div class="down" @click="react(room[0], 4, uname)">
+  <div class="down" @click="react(room[0], 4, uname), room[4] += 1">
     <img src="./assets/images/down-arrow.png" alt="down">
     <h4>{{ room [4] }}</h4>
   </div>
