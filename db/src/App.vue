@@ -4,13 +4,16 @@ import { useCssModule } from 'vue';
 </script>
 
 <template>
-<input v-modal="uname" placeholder="Enter Name">
+
+<h3>Hello, {{uname}}</h3>
+<input v-model="uname" placeholder="enter name" autocomplete="on" autocorrect="on">
+<button @click="username(uname)">Submit</button>
 <div class="page">
 <ol>
   <li v-for="r in rooms" @click="httpGet('http://127.0.0.1:5000/rooms/' + r[0], null)"  class="rooms">
       Room {{ r[0] }}
   </li>
-  <li class="rooms" @click="">
+  <li class="rooms" @click="httpGet('http://127.0.0.1:5000/add_room', null), setTimeout(httpGet('http://127.0.0.1:5000/rooms/' + room[0], null), 50)">
     Add room
   </li>
 </ol>
@@ -19,19 +22,19 @@ import { useCssModule } from 'vue';
     <h1>Room: {{ room[0] }}</h1>
     <h3>Please leave a reaction:</h3>
   </div>
-  <div class="smile" @click="react(room[0], 1, uname), room[1] += 1">
+  <div class="smile" @click="react(room[0], 1, uname), httpGet('http://127.0.0.1:5000/rooms/' + room[0], null)">
     <img src="./assets/images/smile.png" alt="smile">
     <h4>{{ room [1] }}</h4>
   </div>
-  <div class="heart" @click="react(room[0], 2, uname), room[2] += 1">
+  <div class="heart" @click="react(room[0], 2, uname), httpGet('http://127.0.0.1:5000/rooms/' + room[0], null)">
     <img src="./assets/images/heart.png" alt="heart">
     <h4>{{ room [2] }}</h4>
   </div>
-  <div class="up" @click="react(room[0], 3, uname), room[3] += 1">
+  <div class="up" @click="react(room[0], 3, uname), httpGet('http://127.0.0.1:5000/rooms/' + room[0], null)">
     <img src="./assets/images/up-arrow.png" alt="up">
     <h4>{{ room [3] }}</h4>
   </div>
-  <div class="down" @click="react(room[0], 4, uname), room[4] += 1">
+  <div class="down" @click="react(room[0], 4, uname), httpGet('http://127.0.0.1:5000/rooms/' + room[0], null)">
     <img src="./assets/images/down-arrow.png" alt="down">
     <h4>{{ room [4] }}</h4>
   </div>
@@ -52,6 +55,12 @@ import { ref } from 'vue'
 export default {
   created() {
     httpGet('http://127.0.0.1:5000/rooms/0', null)
+  },
+  methods: {
+    username(name) {
+      console.log("updating uname to: " + name)
+      uname.value = name
+    },
   }
 };
 
@@ -78,10 +87,11 @@ function httpGet(theUrl, data) {
   }
 }
 
-function react(room, reaction, uname) {
+function react(room, reaction) {
   console.log(room, reaction, uname)
+  const name = uname._value
   var xmlHttp = new XMLHttpRequest();
-  xmlHttp.open("GET", 'http://127.0.0.1:5000/react/' + room + '/' + uname + '/' + reaction, true);
+  xmlHttp.open("GET", 'http://127.0.0.1:5000/react/' + room + '/' + name + '/' + reaction, true);
   xmlHttp.setRequestHeader("Access-Control-Allow-Headers", "*");
   xmlHttp.setRequestHeader("Access-Control-Allow-Origin", "*");
   xmlHttp.send(null);
@@ -90,12 +100,11 @@ function react(room, reaction, uname) {
       console.log(xmlHttp);
       console.log(xmlHttp.responseText);
       room.value = xmlHttp.responseText
-      httpGet('http://127.0.0.1:5000/rooms/' + room, null)
     }
   }
 }
 
-const uname = ref("default")
+const uname = ref("user")
 const rooms = ref("")
 const room = ref("")
 </script>

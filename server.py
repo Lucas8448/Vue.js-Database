@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, session
 from flask_cors import CORS, cross_origin
 import sqlite3
+import time
 
 # create database if not exists
 conn = sqlite3.connect('database.db')
@@ -11,7 +12,7 @@ c.execute('''CREATE TABLE IF NOT EXISTS rooms(roomId INTEGER PRIMARY KEY, hearts
 for i in range(0, 5):
     c.execute("SELECT * FROM rooms WHERE roomId = ?", (i,))
     if c.fetchone() is None:
-        c.execute("INSERT INTO rooms VALUES (?, 0, 0, 0, 0, 'Lucas', 'Sandra', 'John Filip', 'Ping', 'Default')", (i,))
+        c.execute("INSERT INTO rooms VALUES (?, 0, 0, 0, 0, 'Lucas', 'Sandra', 'Jan Filip', 'Ping', 'Pong')", (i,))
 conn.commit()
 conn.close()
 
@@ -27,6 +28,7 @@ def rooms(roomId):
         c = conn.cursor()
         c.execute("SELECT roomId FROM rooms")
         rooms = c.fetchall()
+        time.sleep(0.05)
         c.execute("SELECT * FROM rooms WHERE roomId = ?", (roomId,))
         room = c.fetchone()
         return jsonify({'rooms': rooms, 'room': room})
@@ -46,12 +48,22 @@ def react(roomId, name, num):
             c.execute("UPDATE rooms SET upvote = ? WHERE roomId = ?", (room[3] + 1, roomId))
         elif num == '4':
             c.execute("UPDATE rooms SET downvote = ? WHERE roomId = ?", (room[4] + 1, roomId))
-        elif num == '5':
-            c.execute("UPDATE rooms SET previous1 = ? WHERE roomId = ?", (room[5], roomId))
-            c.execute("UPDATE rooms SET previous2 = ? WHERE roomId = ?", (room[6], roomId))
-            c.execute("UPDATE rooms SET previous3 = ? WHERE roomId = ?", (room[7], roomId))
-            c.execute("UPDATE rooms SET previous4 = ? WHERE roomId = ?", (room[8], roomId))
-            c.execute("UPDATE rooms SET previous5 = ? WHERE roomId = ?", (name, roomId))
+        c.execute("UPDATE rooms SET previous1 = ? WHERE roomId = ?", (name, roomId))
+        c.execute("UPDATE rooms SET previous2 = ? WHERE roomId = ?", (room[5], roomId))
+        c.execute("UPDATE rooms SET previous3 = ? WHERE roomId = ?", (room[6], roomId))
+        c.execute("UPDATE rooms SET previous4 = ? WHERE roomId = ?", (room[7], roomId))
+        c.execute("UPDATE rooms SET previous5 = ? WHERE roomId = ?", (room[8], roomId))
+        conn.commit()
+
+@app.route('/add_room')
+@cross_origin()
+def add_room():
+    with sqlite3.connect ('database.db') as conn:
+        c = conn.cursor()
+        c.execute("SELECT roomId FROM rooms")
+        rooms = c.fetchall()
+        c.execute("INSERT INTO rooms VALUES (?, 0, 0, 0, 0, '', '', '', '', '')", (len(rooms),))
+        conn.commit()
 
 if __name__ == '__main__':
     app.run()
